@@ -16,17 +16,6 @@
 *.gch
 *.pch
 
-# Libraries
-*.lib
-*.a
-*.la
-*.lo
-
-# Shared objects (inc. Windows DLLs)
-*.dll
-*.so
-*.so.*
-*.dylib
 
 # Executables
 *.exe
@@ -53,3 +42,23 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+venv/
+example/
+
+# Build directories
+build/
+bin/
+.claude/
+.vscode/
+.ruff_cache/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# ASC/BLF test files
+*.asc
+*.blf
+*.png
