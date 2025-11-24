@@ -17,7 +17,7 @@
 
 // External library includes
 #include "asc_module.h"
-#include "canasc/ascparser.h"
+#include "canasc/ascparser_opt.h"
 
 
 // Extract raw value from CAN data bytes
@@ -215,8 +215,8 @@ static int ASC_init(ASCObject* self, PyObject* args, PyObject* kwds) {
         self->network_channels.push_back(channel_id); // Track channel for this network
     }
 
-    // Open ASC file using ASCParser
-    ASCParser parser(asc_filepath);
+    // Open ASC file using optimized ASCParserOpt
+    ASCParserOpt parser(asc_filepath);
 
     if (parser.fileEnded()) {
         PyErr_Format(PyExc_IOError, "Could not open or parse ASC file: %s", asc_filepath);
@@ -241,11 +241,11 @@ static int ASC_init(ASCObject* self, PyObject* args, PyObject* kwds) {
             continue;
         }
 
-        uint32_t                    msgId        = static_cast<uint32_t>(msg->arbitration_id());
-        uint16_t                    msgChannel   = static_cast<uint16_t>(msg->channel());
-        uint8_t                     msgDlc       = static_cast<uint8_t>(msg->dlc());
-        const std::vector<uint8_t>& msgData      = msg->data();
-        double                      timestampSec = msg->timestamp(); // Already in seconds
+        uint32_t       msgId        = static_cast<uint32_t>(msg->arbitration_id());
+        uint16_t       msgChannel   = static_cast<uint16_t>(msg->channel());
+        const uint8_t* msgData      = msg->data();
+        size_t         msgDataSize  = msg->data_size();
+        double         timestampSec = msg->timestamp(); // Already in seconds
 
         // Find matching message in DBC files using cache
         // The cache maps (message_id, channel) -> network index
@@ -302,7 +302,7 @@ static int ASC_init(ASCObject* self, PyObject* args, PyObject* kwds) {
                 const Vector::DBC::Signal& signal = sigPair.second;
 
                 // Extract raw value
-                uint64_t rawValue = extractRawValue(msgData.data(), msgDlc, signal);
+                uint64_t rawValue = extractRawValue(msgData, msgDataSize, signal);
 
                 // Apply scaling immediately during init
                 double physicalValue;

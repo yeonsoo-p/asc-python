@@ -44,8 +44,8 @@ class ASCParser {
   int parseCANRemote(const Tokenizer& tokenized_frame);
   bool loadNextStream();
   static std::string getFileExtension(const std::string& filepath); 
-  std::vector<uint8_t> parseDataFromString(const Tokenizer& tokenized_frame,
-                                           size_t length);
+  void parseDataFromString(Message& msg, const Tokenizer& tokenized_frame,
+                           size_t length);
 	struct Date {
 		std::string weekday;
 		std::string day;

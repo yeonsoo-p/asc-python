@@ -2,14 +2,16 @@
 #define MESSAGE_H
 
 #include <cstdint>
-#include <vector>
+#include <cstring>
 
 struct Message {
+  static constexpr size_t MAX_DATA_SIZE = 64;
+
   Message() = default;
-  Message(Message& other) = default;
-  Message(Message&& other) noexcept;
-  Message& operator=(Message& other) = default;
-  Message& operator=(Message&& other) noexcept;
+  Message(const Message& other) = default;
+  Message(Message&& other) noexcept = default;
+  Message& operator=(const Message& other) = default;
+  Message& operator=(Message&& other) noexcept = default;
 
   void arbitration_id(int id);
   int arbitration_id() const;
@@ -44,8 +46,9 @@ struct Message {
   void timestamp(double timestamp);
   double timestamp() const;
 
-  void data(std::vector<uint8_t>&& data);
-  const std::vector<uint8_t>& data() const;
+  void set_data(const uint8_t* src, size_t len);
+  const uint8_t* data() const;
+  size_t data_size() const;
 
  private:
   double _timestamp = 0.0;
@@ -59,7 +62,8 @@ struct Message {
   bool _is_rx = false;
   bool _bit_rate_switch = false;
   bool _error_state_indicator = false;
-  std::vector<uint8_t> _data;
+  uint8_t _data[MAX_DATA_SIZE] = {0};
+  size_t _data_size = 0;
 };
 
 #endif /* MESSAGE_H */
